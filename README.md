@@ -1,5 +1,7 @@
 # RevStackCore.Neo4j
 
+[![Build status](https://ci.appveyor.com/api/projects/status/2c799v0lrk93sb6l?svg=true)](https://ci.appveyor.com/project/tachyon1337/neo4j)
+
 A Neo4j/cypher implementation of the RevStackCore repository/graph pattern
 
 # Nuget Installation
