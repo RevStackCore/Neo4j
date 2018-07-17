@@ -82,7 +82,7 @@ public class DataService : IDataService
         //traverse the graph to return the latest 50 posts(with comments) by a user's friends. Shape the result into a client view model
         //to be consumed in the view. Limit the returned post comments to 2 per post.
 
-        //for this, we need to write out the cypher for the match query using cypher and use Neo4jCypherRepository that extends Neo4jRepository to return a Cypher property
+        //for this, we need to write out the match query using cypher and use Neo4jCypherRepository that extends Neo4jRepository to return a Cypher property
         var cypher = _cypherRepository.Cypher;
         return cypher
             .Match("(v:User)-[:FOLLOWING]->(u:User)<-[:AUTHORED_BY]-(x:Post)-[:HAS_COMMENT]->(y:Comment)-[:COMMENT_POSTED_BY]->(z:User)")
