@@ -34,6 +34,11 @@ namespace RevStackCore.Neo4j
             return _typedClient.CreateIndex();
         }
 
+        public bool CreateIndex(string property)
+        {
+            return _typedClient.CreateIndex(property);
+        }
+
         public void Delete(TEntity entity)
         {
             _typedClient.Delete(entity);

@@ -10,7 +10,7 @@ using RevStackCore.Extensions;
 
 namespace RevStackCore.Neo4j
 {
-    public class TypedClient<TEntity, TKey> where TEntity : class, IEntity<TKey>
+	public class TypedClient<TEntity, TKey> where TEntity : class, IEntity<TKey>
     {
         private readonly GraphClient _client;
         private readonly string _type;
@@ -640,6 +640,21 @@ namespace RevStackCore.Neo4j
         public bool CreateIndex()
         {
             string index = "INDEX ON :" + _type + "(Id)";
+            _client.Cypher
+                   .Create(index)
+                   .ExecuteWithoutResults();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Creates the index on the specified property.
+        /// </summary>
+        /// <returns><c>true</c>, if index was created, <c>false</c> otherwise.</returns>
+        /// <param name="property">Property.</param>
+        public bool CreateIndex(string property)
+        {
+            string index = "INDEX ON :" + _type + "(" + property + ")";
             _client.Cypher
                    .Create(index)
                    .ExecuteWithoutResults();
