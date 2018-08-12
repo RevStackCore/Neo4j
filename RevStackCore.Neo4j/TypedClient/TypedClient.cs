@@ -461,7 +461,7 @@ namespace RevStackCore.Neo4j
         public bool HasRelationship<TOut>(TKey inboundId, TKey outboundId, string relationship) where TOut : class, IEntity<TKey>
         {
             string _type2 = typeof(TOut).Name;
-            string optionalMatch = "(x:" + _type + ")-[" + relationship + "]->(y:" + _type2 + ")";
+            string optionalMatch = "(x:" + _type + ")-[:" + relationship + "]->(y:" + _type2 + ")";
             var result = _client.Cypher
                                 .OptionalMatch(optionalMatch)
                                 .Where((TEntity x) => x.Id.ToString() == inboundId.ToString())
@@ -496,7 +496,7 @@ namespace RevStackCore.Neo4j
         public IEnumerable<TOut> GetRelatedNodes<TOut>(TKey id, string relationship) where TOut : class, IEntity<TKey>
         {
             string _type2 = typeof(TOut).Name;
-            string optionalMatch = "(x:" + _type + ")-[" + relationship + "]->(y:" + _type2 + ")";
+            string optionalMatch = "(x:" + _type + ")-[:" + relationship + "]->(y:" + _type2 + ")";
             var results = _client.Cypher
                                  .OptionalMatch(optionalMatch)
                                  .Where((TEntity x) => x.Id.ToString() == id.ToString())
@@ -553,7 +553,7 @@ namespace RevStackCore.Neo4j
         public int GetRelatedNodesCount<TOut>(TKey id, string relationship) where TOut : class, IEntity<TKey>
         {
             string _type2 = typeof(TOut).Name;
-            string optionalMatch = "(x:" + _type + ")-[" + relationship + "]->(y:" + _type2 + ")";
+            string optionalMatch = "(x:" + _type + ")-[:" + relationship + "]->(y:" + _type2 + ")";
             var results = _client.Cypher
                                  .OptionalMatch(optionalMatch)
                                  .Where((TEntity x) => x.Id.ToString() == id.ToString())
@@ -569,7 +569,7 @@ namespace RevStackCore.Neo4j
             where TRelation : class
         {
             string _type2 = typeof(TOut).Name;
-            string optionalMatch = "(x:" + _type + ")-[" + relationship + "]->(y:" + _type2 + ")";
+            string optionalMatch = "(x:" + _type + ")-[:" + relationship + "]->(y:" + _type2 + ")";
             var results = _client.Cypher
                                  .OptionalMatch(optionalMatch)
                                  .Where((TEntity x) => x.Id.ToString() == id.ToString())
