@@ -5,7 +5,7 @@ using RevStackCore.Pattern.Graph;
 
 namespace RevStackCore.Neo4j
 {
-    public interface INeo4jCypherService<TEntity,TKey> : IGraphService<TEntity,TKey> where TEntity : class, IEntity<TKey>
+    public interface INeo4jService<TEntity,TKey> : IGraphService<TEntity,TKey> where TEntity : class, IEntity<TKey>
     {
         ICypherFluentQuery Cypher { get; }
     }

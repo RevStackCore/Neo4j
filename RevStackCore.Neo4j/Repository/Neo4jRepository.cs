@@ -2,18 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Neo4jClient.Cypher;
 using RevStackCore.Pattern;
 using RevStackCore.Pattern.Graph;
 
 namespace RevStackCore.Neo4j
 {
-    public class Neo4jRepository<TEntity, TKey> : IGraphRepository<TEntity, TKey> where TEntity : class, IEntity<TKey>
+    public class Neo4jRepository<TEntity, TKey> : INeo4jRepository<TEntity, TKey> where TEntity : class, IEntity<TKey>
     {
         protected readonly TypedClient<TEntity, TKey> _typedClient;
         public Neo4jRepository(Neo4jDbContext context)
         {
             _typedClient = new TypedClient<TEntity, TKey>(context);
         }
+
+        public ICypherFluentQuery Cypher
+        {
+            get
+            {
+                return _typedClient.Cypher;
+            }
+        }
+
         public TEntity Add(TEntity entity)
         {
             return _typedClient.Insert(entity);

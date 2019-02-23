@@ -1,6 +1,6 @@
 {
   "name": "RevStackCore.Neo4j",
-  "version": "0.9.2",
+  "version": "1.0.0",
   "description": "Neo4j implementation of the RevStackCore repository/graph pattern",
   "main": "RevStackCore.Neo4j.sln",
   "scripts": {

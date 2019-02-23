@@ -150,12 +150,11 @@ namespace RevStackCore.Neo4j
                 
             //delete node and ingpoing/outgoing relationships
             string nodeMatch = "(x:" + _type + ")";
-            string nodeOptionalMatch = "(x)-[r]-()";
+            //string nodeOptionalMatch = "(x)-[r]-()";
             _client.Cypher
                    .Match(nodeMatch)
-                   .OptionalMatch(nodeOptionalMatch)
                    .Where((TEntity x) => x.Id.ToString() == entity.Id.ToString())
-                   .Delete("r, x")
+                   .DetachDelete("x")
                    .ExecuteWithoutResults();
                   
         }
@@ -605,15 +604,16 @@ namespace RevStackCore.Neo4j
         /// <typeparam name="TOut">The 1st type parameter.</typeparam>
         public bool DeleteRelationship<TOut>(TKey inboundId, TKey outboundId, string relationship) where TOut : class, IEntity<TKey>
         {
-            string nodeMatch1 = "(x:" + _type + ")";
+            //string nodeMatch1 = "(x:" + _type + ")";
             string _type2 = typeof(TOut).Name;
-            string nodeMatch2 = "(y:" + _type2 + ")";
-            string relation = "x-[:" + relationship + "]->y";
+            //string nodeMatch2 = "(y:" + _type2 + ")";
+            //string relation = "(x)-[:" + relationship + "]->(y)";
+            string optionalMatch = "(x:" + _type + ")-[r:" + relationship + "]->(y:" + _type2 + ")";
             _client.Cypher
-                   .Match(nodeMatch1, nodeMatch2)
+                   .OptionalMatch(optionalMatch)
                    .Where((TEntity x) => x.Id.ToString() == inboundId.ToString())
                    .AndWhere((TOut y) => y.Id.ToString() == outboundId.ToString())
-                   .Remove(relation)
+                   .Delete("r")
                    .ExecuteWithoutResults();
 
             return true;

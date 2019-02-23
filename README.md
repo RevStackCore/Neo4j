@@ -14,13 +14,18 @@ Install-Package RevStackCore.Neo4j
 # Repositories
 
 ```cs
- public class Neo4jRepository<TEntity, TKey> : IGraphRepository<TEntity, TKey> where TEntity : class, IEntity<TKey>
- public interface INeo4jCypherRepository<TEntity,TKey> : IGraphRepository<TEntity,TKey> where TEntity:class, IEntity<TKey>
+ public interface INeo4jRepository<TEntity,TKey> : IGraphRepository<TEntity,TKey> where TEntity:class, IEntity<TKey>
  {
      ICypherFluentQuery Cypher { get; }
  }
- public class Neo4jCypherRepository<TEntity, TKey> : Neo4jRepository<TEntity, TKey>, INeo4jCypherRepository<TEntity, TKey> where TEntity : class, IEntity<TKey>
+ public class Neo4jRepository<TEntity, TKey> : INeo4jRepository<TEntity, TKey> where TEntity : class, IEntity<TKey>
 ```
+
+# Implementations
+Neo4jRepository<TEntity,Tkey> implements IRepository<TEntity,TKey> for basic Crud operations and Find
+Neo4jRepository<TEntity,Tkey> implements IGraphRepository<TEntity,TKey> for Crud + Graph operations
+Neo4jRepository<TEntity,Tkey> implements INeo4jRepository<TEntity,TKey> for Crud + Graph operations + Cypher
+
 
 # Usage
 
@@ -34,8 +39,7 @@ private static void ConfigureServices(IServiceCollection services)
     string password = "password";
     services.AddSingleton(p => new Neo4jDbContext(uri, user, password))
             .AddSingleton<IGraphRepository<User, string>, Neo4jRepository<User, string>>()
-            .AddSingleton<IGraphRepository<Post, string>, Neo4jRepository<Post, string>>()
-            .AddSingleton<INeo4jCypherRepository<Post, string>, Neo4jCypherRepository<Post, string>>();
+            .AddSingleton<INeo4jRepository<Post, string>, Neo4jRepository<Post, string>>();
 
 }
 
@@ -47,13 +51,11 @@ private static void ConfigureServices(IServiceCollection services)
 public class DataService : IDataService
 {
     private readonly IGraphRepository<User, string> _userRepository;
-    private readonly IGraphRepository<Post, string> _postRepository;
-    private readonly INeo4jCypherRepository<Post, string> _cypherRepository;
-    public DataService(IGraphRepository<User, string> userRepository, IGraphRepository<Post, string> postRepository, INeo4jCypherRepository<Post, string> cypherRepository)
+    private readonly INeo4jRepository<Post, string> _postRepository;
+    public DataService(IGraphRepository<User, string> userRepository, INeo4jRepository<Post, string> postRepository)
     {
         _userRepository = userRepository;
         _postRepository = postRepository;
-        _cypherRepository = cypherRepository;
     }
 
     public Post AddPost(User user, Post post)
@@ -82,8 +84,8 @@ public class DataService : IDataService
         //traverse the graph to return the latest 50 posts(with comments) by a user's friends. Shape the result into a client view model
         //to be consumed in the view. Limit the returned post comments to 2 per post.
 
-        //for this, we need to write out the match query using cypher and use Neo4jCypherRepository that extends Neo4jRepository to return a Cypher property
-        var cypher = _cypherRepository.Cypher;
+        //for this, we need to write out the match query using the Neo4jRepository Cypher property available on the postRepository that implements INeo4jRepository
+        var cypher = _postRepository.Cypher;
         return cypher
             .Match("(v:User)-[:FOLLOWING]->(u:User)<-[:AUTHORED_BY]-(x:Post)-[:HAS_COMMENT]->(y:Comment)-[:COMMENT_POSTED_BY]->(z:User)")
             .With("v,x,u,{Comment:y,Author:z} as c")
@@ -102,4 +104,23 @@ public class DataService : IDataService
 }
 
 ```
+
+# AspNetCore Identity framework
+Neo4jRepository can be plugged into the RevStackCore generic implementation of the AspNetCore Identity framework
+https://github.com/RevStackCore/Identity
+
+
+# Asynchronous Services
+```cs
+ public interface INeo4jService<TEntity,TKey> : IGraphService<TEntity,TKey> where TEntity:class, IEntity<TKey>
+ {
+     ICypherFluentQuery Cypher { get; }
+ }
+ public class Neo4jService<TEntity, TKey> : INeo4jService<TEntity, TKey> where TEntity : class, IEntity<TKey>
+```
+
+# Implementations
+Neo4jService<TEntity,Tkey> implements IService<TEntity,TKey> for basic Async Crud operations and FindAsync
+Neo4jService<TEntity,Tkey> implements IGraphService<TEntity,TKey> for Async Crud + Graph operations
+Neo4jService<TEntity,Tkey> implements INeo4jService<TEntity,TKey> for Async Crud + Graph operations + Cypher
 
